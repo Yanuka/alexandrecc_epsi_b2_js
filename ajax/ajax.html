@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AJAX Examples</title>
+  <meta charset="utf-8">
+
+  <script type="text/javascript">
+    /*
+    XMLHttpRequest : https://www.w3schools.com/js/js_ajax_http.asp
+    Request https://www.w3schools.com/js/js_ajax_http_send.asp
+    Response https://www.w3schools.com/js/js_ajax_http_response.asp
+    */
+
+    function loadData() {
+      // alert('loadData');
+
+      var xhttp = new XMLHttpRequest();
+
+      xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          console.clear();
+          console.log(this.responseText);
+        }
+      };
+
+      var service = 'https://opendata.paris.fr/api/records/1.0/search/?dataset=postes-publics-des-bibliotheques';
+      // Attention cross origin
+
+      xhttp.open("GET", service, true);
+      xhttp.send();
+    }
+
+    function init() {
+      var button = document.getElementById('buttonload');
+      button.addEventListener('click', loadData);
+    }
+  </script>
+</head>
+<body onload="init();">
+  <button id="buttonload">LOAD DATA</button>
+  <div>
+    <ul>
+      <li>https://data.sncf.com/explore/?sort=modified</li>
+      <li>https://opendata.paris.fr/explore/?sort=modified</li>
+    </ul>
+  </div>
+</body>
+</html>
