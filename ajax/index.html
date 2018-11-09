@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Maps</title>
+    <meta charset="utf-8">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"
+          integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ=="
+          crossorigin=""/>
+
+    <!-- Make sure you put this AFTER Leaflet's CSS -->
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"
+            integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log=="
+            crossorigin=""></script>
+
+    <style type="text/css">
+        #mapid {
+            height: 600px;
+    </style>
+
+</head>
+<body onload="init()">
+
+<div id="mapid"></div>
+
+<button id="buttonload">Afficher les Popups</button>
+
+<script type="text/javascript">
+    var map = L.map('mapid').setView([48.866667, 2.333333], 13);
+
+    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+
+    var greenIcon = L.icon({
+        iconUrl: 'leaf-green.png',
+        shadowUrl: 'leaf-shadow.png',
+
+        iconSize:     [38, 95], // size of the icon
+        shadowSize:   [50, 64], // size of the shadow
+        iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+        shadowAnchor: [4, 62],  // the same for the shadow
+        popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+    });
+
+    var popup = L.popup();
+
+    function init()
+    {
+        var button = document.getElementById('buttonload');
+        button.addEventListener('click', loadOpenData);
+    }
+
+    function drawPopup(lon, lat, desc) {
+        var marker = L.marker([lon, lat]).addTo(map);
+        marker.bindPopup(desc).openPopup();
+    }
+
+    var stringResponse;
+
+    function loadOpenData()
+    {
+
+        var data = new XMLHttpRequest();
+
+        data.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                stringResponse = this.responseText;
+                var reply = JSON.parse(stringResponse);
+                console.log(this.responseText);
+                console.log(reply);
+
+                var i = 0;
+                while (i < reply.records.length)
+                {
+                    var lat = reply.records[i].fields.geo_point_2d[0];
+                    var lon = reply.records[i].fields.geo_point_2d[1];
+                    var desc = reply.records[i].fields.adresse;
+                    drawPopup(lat, lon, desc);
+                    i++;
+                }
+            }
+        };
+
+        var loadData = 'https://opendata.paris.fr//api/records/1.0/search/?dataset=etablissements-scolaires';
+
+        data.open("GET", loadData, true);
+        data.send();
+    }
+
+</script>
+
+</body>
+</html>
