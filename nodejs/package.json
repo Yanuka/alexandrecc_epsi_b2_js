@@ -1,0 +1,37 @@
+{
+  "name": "alexandrecc_epsi_b2_js",
+  "version": "1.0.0",
+  "description": "",
+  "main": "teti1311.js",
+  "scripts": {
+    "start": "node teti1311.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Yanuka/alexandrecc_epsi_b2_js.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Yanuka/alexandrecc_epsi_b2_js.git"
+  },
+  "homepage": "https://github.com/Yanuka/alexandrecc_epsi_b2_js.git#readme",
+  "dependencies": {
+    "express": "^4.16.4",
+    "http-server": "^0.11.1",
+    "socket.io": "^2.1.1"
+  }
+}
+
+{
+  "name": "socket-chat-example",
+  "version": "0.0.1",
+  "description": "my first socket.io app",
+  "dependencies": {
+    "express": "^4.15.2",
+    "socket.io": "^1.7.3"
+  },
+  "scripts": {
+    "start": "node index.js"
+  }
+}
