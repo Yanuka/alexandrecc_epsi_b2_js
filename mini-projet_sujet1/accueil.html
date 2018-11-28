@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Accueil</title>
+	<script type="text/javascript">
+		var xht = new XMLHttpRequest();
+		var parsedResults = null;
+
+		xht.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				parsedResults = JSON.parse(this.responseText);
+				var campusNote = []
+
+				for (var i = 0; i < parsedResults.table.length; i++) {
+					campusNote[i] = " " +parsedResults.table[i].campusActuel;
+				}
+
+				var p = document.createElement('p');
+				var text = document.createTextNode("Les écoles qui ont déjà noté : "+ campusNote);
+				document.body.appendChild(p);
+				p.appendChild(text);
+			}
+		}
+
+		xht.open("GET", "/notation?type=dataJSON", true);
+		xht.send();
+	</script>
+	<style type="text/css">
+		*{
+			font-family: sans-serif;
+		}
+		select{
+			border: none;
+			padding: 8px;
+			border-radius: 2px;
+		}
+		button{
+			border: none;
+			padding: 8px;
+			border-radius: 2px;
+			background: #B0C3DF;
+		}
+		button:hover{
+			background: #8AA0C1;
+		}
+		h2,h3,h4{
+			font-weight: 300;
+		}
+		#body1{
+			background: #F5F5F5;
+		}
+	</style>
+</head>
+<body id="body1">
+	<div id="div1" style="margin-bottom: 30px">
+		<h3>Sélectionnez votre campus:</h3>
+		<select id="select">
+		</select>
+		<button onclick="displayCampus(); campus.campusActuel = document.getElementById('select').value">Valider</button>
+	</div>
+</body>
+	<script type="text/javascript">
+		var displayed = false;
+
+		var campus = { liste : [
+				["Brest", null],
+				["Lille", null],
+				["Paris", null],
+				["Bordeaux", null],
+				["Arras", null],
+				["Lyon", null],
+				["Grenoble", null],
+				["Montpellier", null],
+				["Nantes", null]
+			],
+			campusActuel : ""
+		};
+
+
+		for (var i = 0; i < campus.liste.length; i++) {
+			var x = document.createElement("OPTION");
+			x.setAttribute("value", campus.liste[i][0]);
+			x.innerHTML = campus.liste[i][0];
+  			document.getElementById("select").appendChild(x);
+		}
+
+		function displayCampus() {
+			if (displayed == false) {
+				var newText = document.createElement("H2");
+				newText.innerHTML = "Veuillez donner une note sur 20 les workshops de chaque campus:";
+				document.getElementById("body1").appendChild(newText);
+
+				var newDiv = document.createElement("DIV");
+				newDiv.setAttribute("id", "div2");
+				newDiv.setAttribute("style", "border: 2px solid #292929; border-radius:10px; width: 180px; padding: 10px; margin-bottom: 10px;");
+				document.getElementById("body1").appendChild(newDiv);
+
+				for (var i = 0; i < campus.liste.length; i++) {
+					var newTitle = document.createElement("H4");
+					var newInput = document.createElement("INPUT");
+					newInput.setAttribute("type", "text");
+					newInput.setAttribute("name", "input");
+					newTitle.innerHTML = campus.liste[i][0];
+		  			document.getElementById("div2").appendChild(newTitle);
+		  			document.getElementById("div2").appendChild(newInput);
+				}
+
+				var newSubmit = document.createElement("BUTTON");
+				newSubmit.setAttribute("onclick", "toStringData(campus); redirect()");
+				newSubmit.innerHTML = "Envoyer";
+				document.getElementById("body1").appendChild(newSubmit);
+
+				displayed = true;
+			} else {
+				alert("Vous avez déjà sélectionné votre campus!");
+			}
+		}
+
+		function toStringData(campus) {
+			var correctinput = true;
+			for (var i = 0; i < campus.liste.length; i++) {
+				if (parseInt(document.getElementsByName("input")[i].value) > 20 || parseInt(document.getElementsByName("input")[i].value) < 0 || Number.isInteger(parseInt(document.getElementsByName("input")[i].value)) == false) {
+					correctinput = false;
+				}
+			}
+			if (correctinput == true) {
+				for (var i = 0; i < campus.liste.length; i++) {
+					campus.liste[i][1] = parseInt(document.getElementsByName("input")[i].value);
+				}
+				var campusString = JSON.stringify(campus);
+				console.log(campusString);
+
+				var xhttp = new XMLHttpRequest();
+
+				xhttp.open("POST", "http://"+window.location.hostname+":3000/");
+				xhttp.setRequestHeader("Content-Type", "application/json");
+				xhttp.setRequestHeader("Access-Control-Allow-Origin", "*");
+				xhttp.send(campusString);
+			} else {
+				alert("Veuillez entrer des valeurs valides!")
+			}
+		}
+
+		function redirect() {
+			alert("Vous allez être redirigé sur la page des résultats");
+			window.location.replace("/notation?type=resultats");
+		}
+	</script>
+</html>
